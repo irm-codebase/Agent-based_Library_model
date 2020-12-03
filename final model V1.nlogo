@@ -8,7 +8,7 @@ emergency
 breed[visitors visitor]
 breed[workers worker]
 
-;; penis
+
 
 turtles-own [
   sex
