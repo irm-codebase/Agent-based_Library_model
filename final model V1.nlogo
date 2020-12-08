@@ -48,7 +48,7 @@ to setup
           set pref-exit "main"
         ] [
           set trained? true
-          set pref-exit get-closest-exit ([pxcor] of patch-here) ([pycor] of patch-here)
+          set pref-exit min-one-of patches with [ pcolor = 14.8 ] [distance self]
         ]
       ]
     ]
@@ -105,24 +105,6 @@ end
 ;; INTERNAL FUNCTIONS
 to-report get-random-age [min-age max-age]
   report min-age + random (max-age - min-age)
-end
-
-to-report get-closest-exit [x y]
-
-  let dist-main [distance patch 119 146] of patch x y
-  let dist-top [distance patch 154 167] of patch x y
-  let dist-bottom [distance patch 23 26] of patch x y
-  let closest "none"
-
-  ifelse (dist-main < dist-top) and (dist-main < dist-bottom) [
-    set closest "main"
-  ] [
-    ifelse dist-top < dist-bottom [
-      set closest "top"
-    ] [
-      set closest "bottom"
-  ]]
-  report closest
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
