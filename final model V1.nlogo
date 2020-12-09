@@ -36,7 +36,7 @@ to setup
   set emergency false
 
   while [ count visitors < number-visitors ] [
-    ask one-of patches with [ pcolor = 9.9 ] [
+    ask one-of patches with [ pcolor = 9.9 or pcolor = 137.1 or pcolor = 44.3 or pcolor = 35.6 ] [
       sprout-visitors 1 [
         set size 2
         set color blue
@@ -55,7 +55,7 @@ to setup
   ]
 
   while [ count workers < number-workers ] [
-    ask one-of patches with [ pcolor = 9.9 ] [
+    ask one-of patches with [ pcolor = 9.9 or pcolor = 87.1 ] [
       sprout-workers 1 [
         set size 2
         set color green

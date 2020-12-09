@@ -40,7 +40,7 @@ to setupMap
   ;import-pcolors "data/coloured_plan.png"
   
   ; simplified floorplan only has the exits in red, walls in black
-  import-pcolors "data/blackwhite_plan.png"
+  import-pcolors "data/blackwhite_plan_color.png"
   
   clean-colors
 end
