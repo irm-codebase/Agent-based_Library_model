@@ -1,16 +1,18 @@
 __includes [ "utilities.nls" ] ; all the boring but important stuff not related to content
 
 globals [
-all-colors
-emergency
+  all-colors
+  emergency?
 
-color_gf
-color_study
-color_desk
-color_food
-color_wc
-color_office
-color_exit
+  color_gf
+  color_study
+  color_desk
+  color_food
+  color_wc
+  color_office
+  color_exit
+
+  valid-patches
 ]
 
 breed[visitors visitor]
@@ -22,6 +24,9 @@ turtles-own [
   vision-range
   speed
   pref-exit
+
+  path-to-exit
+  path-walked
 ]
 
 visitors-own [
@@ -34,7 +39,7 @@ workers-own [
 ]
 
 patches-own [
-
+  dijkstra-dist
 ]
 
 to setup
@@ -42,10 +47,11 @@ to setup
   setup-colors
 
   setupMap
-  set emergency false
+  set emergency? false
 
   setup-visitors number-visitors
   setup-workers number-workers
+  setup-patches
 
 
  ask turtles [
@@ -60,11 +66,13 @@ to setup
     ]
   ]
 
+  ask turtles [build-path pref-exit]
+
   reset-ticks
 end
 
 to go
-  ifelse not emergency [
+  ifelse not emergency? [
     ask turtles [
       rt ( 5 - random-float 10 )
       while [ [ pcolor ] of patch-ahead 1 = 0 ] [
@@ -107,7 +115,7 @@ to setup-visitors [#num]
 
       ifelse random 100 > percentage-trained-visitors [
         set trained? false
-        set pref-exit "main"
+        set pref-exit (patch 115 182) ;; some random patch in the entrance
       ] [
         set trained? true
         turtle-set-closest-exit
@@ -117,7 +125,8 @@ to setup-visitors [#num]
 end
 
 to setup-workers [#num]
-  ask n-of #num patches with [pcolor = color_gf or pcolor = color_office or pcolor = color_wc] [ ;; workers can spawn in offices, general area or bathroom
+  ;ask n-of #num patches with [pcolor = color_gf or pcolor = color_office or pcolor = color_wc] [ ;; workers can spawn in offices, general area or bathroom
+  ask n-of #num patches with [pcolor = color_gf] [ ;; workers can spawn in offices, general area or bathroom
     sprout-workers 1 [
       set size 2
       set color gray
@@ -127,10 +136,43 @@ to setup-workers [#num]
   ]
 end
 
+to setup-patches
+  set valid-patches patches with [pcolor = color_gf or pcolor = color_study or pcolor = color_desk or pcolor = color_food or pcolor = color_wc or pcolor = color_office or pcolor = color_exit]
+end
+
 ;; TURTLE FUNCTIONS
 to turtle-set-closest-exit
   set pref-exit min-one-of patches with [ pcolor = color_exit ] [distance self]
   ;set destination one-of patches with [pcolor = 14.8] ; pick a random exitpatch to go to
+end
+
+to build-path [#goal]
+  ask valid-patches
+    [ set dijkstra-dist -1]
+  let p patch-set patch-here
+  ask p
+    [ set dijkstra-dist 0] ; give all patches except the one you are on right now a value of -1
+  let s 0
+  while [not member? #goal p] ; while the destination of the turtle is not jet in the path, keep going
+  [ set s s + 1
+      let newp patch-set ([neighbors4 with [ (pcolor != 0) and ((dijkstra-dist < 0) or (dijkstra-dist > s)) ]] of p)
+      ; ask all your patches around you if you can walk there and if you have already been there
+      ask newp
+        [ set dijkstra-dist s ; give these patches the value of the amount of steps (patches) you would have to take as turtle to get there
+          set pcolor 28 ; this shows the working of the algorithm, only works with 1 turtle
+        ]
+      set p newp ]
+  let path patch-set #goal ; start with your destination
+  while [not member? patch-here path] ; as long as you are not back at where you are standing now, keep going
+      [ let newpath patch-set ([one-of neighbors4 with [( dijkstra-dist = -1 + [dijkstra-dist] of (min-one-of path [dijkstra-dist])) and (count neighbors4 with [member? self path] = 1)] ] of path) ;add a patch to the path that is one step closer to you
+        let oldpath path
+        set path (patch-set oldpath newpath) ; add this patch to your path
+        ]
+  ;ask path [set pcolor green] ; this highlights your path in green, only works with 1 turtle
+  show path ; this shows the length of the path
+  set path-to-exit path
+  set path-walked patch-set patch-here
+
 end
 
 ;; INTERNAL FUNCTIONS
@@ -237,7 +279,7 @@ number-visitors
 number-visitors
 0
 600
-450.0
+0.0
 5
 1
 people
@@ -252,7 +294,7 @@ number-workers
 number-workers
 0
 100
-50.0
+1.0
 1
 1
 people
@@ -298,10 +340,10 @@ count workers
 BUTTON
 10
 241
-150
+190
 276
 NIL
-set emergency true
+set emergency? true
 NIL
 1
 T
