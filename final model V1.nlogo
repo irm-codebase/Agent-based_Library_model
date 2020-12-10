@@ -19,13 +19,12 @@ breed[workers worker]
 turtles-own [
   sex
   age
-  work?
   vision-range
   speed
+  pref-exit
 ]
 
 visitors-own [
-  pref-exit
   exit
   alert
   trained?
@@ -40,43 +39,16 @@ patches-own [
 
 to setup
   clear-all
-  set color_gf 9.9
-  set color_study 137.1
-  set color_desk 44.3
-  set color_food 44.7
-  set color_wc 35.6
-  set color_office 87.1
-  set color_exit 14.8
+  setup-colors
 
   setupMap
   set emergency false
 
-  ask n-of number-visitors patches with [pcolor = color_gf or pcolor = color_study or pcolor = color_desk or pcolor = color_food or pcolor = color_wc] [
-    sprout-visitors 1 [
-      set size 2
-      set color blue
-      set shape "person"
+  setup-visitors number-visitors
+  setup-workers number-workers
 
-      ifelse random 100 > percentage-trained-visitors [
-        set trained? false
-        set pref-exit "main"
-      ] [
-        set trained? true
-        set pref-exit min-one-of patches with [ pcolor = color_exit ] [distance self]
-      ]
-    ]
-  ]
-
-  ask n-of number-workers patches with [pcolor = color_gf or pcolor = color_office or pcolor = color_wc] [ ;; workers can spawn in offices, general area or bathroom
-    sprout-workers 1 [
-      set size 2
-      set color gray
-      set shape "person"
-    ]
-  ]
 
  ask turtles [
-    set work? false
     set age (get-random-age 10 80)
     ifelse random 100 > percentage-female [
       set sex "male"
@@ -109,10 +81,57 @@ to go
     ]
   ]
 
+  if not any? turtles [stop]
+
   tick ; next time step
 end
 
+;; SETUP FUNCTIONS, to keep the setup tidy
 
+to setup-colors
+  set color_gf 9.9
+  set color_study 137.1
+  set color_desk 44.3
+  set color_food 44.7
+  set color_wc 35.6
+  set color_office 87.1
+  set color_exit 14.8
+end
+
+to setup-visitors [#num]
+  ask n-of #num patches with [pcolor = color_gf or pcolor = color_study or pcolor = color_desk or pcolor = color_food or pcolor = color_wc] [
+    sprout-visitors 1 [
+      set size 2
+      set color blue
+      set shape "person"
+
+      ifelse random 100 > percentage-trained-visitors [
+        set trained? false
+        set pref-exit "main"
+      ] [
+        set trained? true
+        turtle-set-closest-exit
+      ]
+    ]
+  ]
+end
+
+to setup-workers [#num]
+  ask n-of #num patches with [pcolor = color_gf or pcolor = color_office or pcolor = color_wc] [ ;; workers can spawn in offices, general area or bathroom
+    sprout-workers 1 [
+      set size 2
+      set color gray
+      set shape "person"
+      turtle-set-closest-exit
+    ]
+  ]
+end
+
+;; TURTLE FUNCTIONS
+to turtle-set-closest-exit
+  set pref-exit min-one-of patches with [ pcolor = color_exit ] [distance self]
+  ;set destination one-of patches with [pcolor = 14.8] ; pick a random exitpatch to go to
+end
 
 ;; INTERNAL FUNCTIONS
 to-report get-random-age [min-age max-age]
