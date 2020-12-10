@@ -3,6 +3,14 @@ __includes [ "utilities.nls" ] ; all the boring but important stuff not related 
 globals [
 all-colors
 emergency
+
+color_gf
+color_study
+color_desk
+color_food
+color_wc
+color_office
+color_exit
 ]
 
 breed[visitors visitor]
@@ -32,34 +40,38 @@ patches-own [
 
 to setup
   clear-all
+  set color_gf 9.9
+  set color_study 137.1
+  set color_desk 44.3
+  set color_food 44.7
+  set color_wc 35.6
+  set color_office 87.1
+  set color_exit 14.8
+
   setupMap
   set emergency false
 
-  while [ count visitors < number-visitors ] [
-    ask one-of patches with [ pcolor = 9.9 or pcolor = 137.1 or pcolor = 44.3 or pcolor = 35.6 ] [
-      sprout-visitors 1 [
-        set size 2
-        set color blue
-        set shape "person"
+  ask n-of number-visitors patches with [pcolor = color_gf or pcolor = color_study or pcolor = color_desk or pcolor = color_food or pcolor = color_wc] [
+    sprout-visitors 1 [
+      set size 2
+      set color blue
+      set shape "person"
 
-
-        ifelse random 100 > percentage-trained-visitors [
-          set trained? false
-          set pref-exit "main"
-        ] [
-          set trained? true
-          set pref-exit min-one-of patches with [ pcolor = 14.8 ] [distance self]
-        ]
+      ifelse random 100 > percentage-trained-visitors [
+        set trained? false
+        set pref-exit "main"
+      ] [
+        set trained? true
+        set pref-exit min-one-of patches with [ pcolor = color_exit ] [distance self]
       ]
     ]
   ]
 
-  while [ count workers < number-workers ] [
-    ask one-of patches with [ pcolor = 9.9 or pcolor = 87.1 ] [
-      sprout-workers 1 [
-        set size 2
-        set color green
-        set shape "person" ]
+  ask n-of number-workers patches with [pcolor = color_gf or pcolor = color_office or pcolor = color_wc] [ ;; workers can spawn in offices, general area or bathroom
+    sprout-workers 1 [
+      set size 2
+      set color gray
+      set shape "person"
     ]
   ]
 
@@ -92,7 +104,7 @@ to go
   ]
 
   ask turtles [
-    if [ pcolor ] of patch-here = 14.8 [
+    if [ pcolor ] of patch-here = color_exit [
       die
     ]
   ]
