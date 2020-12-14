@@ -142,7 +142,7 @@ end
 
 ;; TURTLE FUNCTIONS
 to turtle-set-closest-exit
-  set pref-exit min-one-of ( patches with [ pcolor = color_exit ] ) [distance self]
+  set pref-exit min-one-of (patches with [ pcolor = color_exit ] [distance self]
   ;set destination one-of patches with [pcolor = 14.8] ; pick a random exitpatch to go to
 end
 
