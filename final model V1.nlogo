@@ -1,6 +1,7 @@
 __includes [ "utilities.nls" ] ; all the boring but important stuff not related to content
 
 globals [
+  exits
   all-colors
   emergency?
 
@@ -142,7 +143,7 @@ end
 
 ;; TURTLE FUNCTIONS
 to turtle-set-closest-exit
-  set pref-exit min-one-of ( patches with [ pcolor = color_exit ] ) [distance self]
+  set pref-exit min-one-of (patches with [pcolor = 14.8]) [distance myself]
   ;set destination one-of patches with [pcolor = 14.8] ; pick a random exitpatch to go to
 end
 
@@ -159,7 +160,7 @@ to build-path [#goal]
       ; ask all your patches around you if you can walk there and if you have already been there
       ask newp
         [ set dijkstra-dist s ; give these patches the value of the amount of steps (patches) you would have to take as turtle to get there
-          set pcolor 28 ; this shows the working of the algorithm, only works with 1 turtle
+         ; set pcolor 28 ; this shows the working of the algorithm, only works with 1 turtle
         ]
       set p newp ]
   let path patch-set #goal ; start with your destination
@@ -225,10 +226,10 @@ NIL
 1
 
 BUTTON
-11
-47
-74
-80
+10
+48
+84
+82
 NIL
 go
 T
@@ -294,7 +295,7 @@ number-workers
 number-workers
 0
 100
-1.0
+50.0
 1
 1
 people
