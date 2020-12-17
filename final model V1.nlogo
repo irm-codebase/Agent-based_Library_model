@@ -34,6 +34,7 @@ visitors-own [
   exit
   alert
   trained?
+  delay ;; indicates the number of seconds left to end task before evacuation
 ]
 
 workers-own [
@@ -117,6 +118,7 @@ to setup-visitors [#num]
       ifelse random 100 > percentage-trained-visitors [
         set trained? false
         set pref-exit (patch 115 182) ;; some random patch in the entrance
+        time-delay
       ] [
         set trained? true
         turtle-set-closest-exit
@@ -145,6 +147,21 @@ end
 to turtle-set-closest-exit
   set pref-exit min-one-of (patches with [pcolor = 14.8]) [distance myself]
   ;set destination one-of patches with [pcolor = 14.8] ; pick a random exitpatch to go to
+end
+
+to time-delay ;;values are arbitrary, should be discussed further during meeting
+  let task [ pcolor ] of patch-here
+  (
+    ifelse task = color_study [
+      set delay 60
+    ]
+    task = color_food [
+      set delay 30
+    ]
+    task = color_wc [
+      set delay 120
+    ]
+  )
 end
 
 to build-path [#goal]
