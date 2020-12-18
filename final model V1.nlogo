@@ -1,6 +1,9 @@
 __includes [ "utilities.nls" ] ; all the boring but important stuff not related to content
 
 globals [
+  exit_1
+  exit_2
+  exit_3
   exits
   all-colors
   emergency?
@@ -51,10 +54,9 @@ to setup
   setupMap
   set emergency? false
 
+  setup-patches
   setup-visitors number-visitors
   setup-workers number-workers
-  setup-patches
-
 
  ask turtles [
     set age (get-random-age 10 80)
@@ -68,7 +70,7 @@ to setup
     ]
   ]
 
-  ask turtles [build-path pref-exit]
+  ; ask turtles [build-path pref-exit]
 
   reset-ticks
 end
@@ -141,11 +143,21 @@ end
 
 to setup-patches
   set valid-patches patches with [pcolor = color_gf or pcolor = color_study or pcolor = color_desk or pcolor = color_food or pcolor = color_wc or pcolor = color_office or pcolor = color_exit]
+  set exit_1 patches with [pcolor = 14.8 and pxcor < 100]
+  set exit_2 patches with [pcolor = 14.8 and pxcor < 130 and pycor > 170]
+  set exit_3 patches with [pcolor = 14.8 and pxcor > 140]
 end
 
 ;; TURTLE FUNCTIONS
 to turtle-set-closest-exit
-  set pref-exit min-one-of (patches with [pcolor = 14.8]) [distance myself]
+  let nearest-door min-one-of (patches with [pcolor = 14.8] ) [distance myself]
+  ( ifelse [ pxcor ] of nearest-door < 100 [
+    set pref-exit one-of exit_1 ]
+  ( [ pxcor ] of nearest-door > 130 ) and ( [ pycor ] of nearest-door > 170 ) [
+    set pref-exit one-of exit_2 ]
+  [ pxcor ] of nearest-door > 140 [
+    set pref-exit one-of exit_3 ]
+  )
   ;set destination one-of patches with [pcolor = 14.8] ; pick a random exitpatch to go to
 end
 
@@ -162,35 +174,6 @@ to time-delay ;;values are arbitrary, should be discussed further during meeting
       set delay 120
     ]
   )
-end
-
-to build-path [#goal]
-  ask valid-patches
-    [ set dijkstra-dist -1]
-  let p patch-set patch-here
-  ask p
-    [ set dijkstra-dist 0] ; give all patches except the one you are on right now a value of -1
-  let s 0
-  while [not member? #goal p] ; while the destination of the turtle is not jet in the path, keep going
-  [ set s s + 1
-      let newp patch-set ([neighbors4 with [ (pcolor != 0) and ((dijkstra-dist < 0) or (dijkstra-dist > s)) ]] of p)
-      ; ask all your patches around you if you can walk there and if you have already been there
-      ask newp
-        [ set dijkstra-dist s ; give these patches the value of the amount of steps (patches) you would have to take as turtle to get there
-         ; set pcolor 28 ; this shows the working of the algorithm, only works with 1 turtle
-        ]
-      set p newp ]
-  let path patch-set #goal ; start with your destination
-  while [not member? patch-here path] ; as long as you are not back at where you are standing now, keep going
-      [ let newpath patch-set ([one-of neighbors4 with [( dijkstra-dist = -1 + [dijkstra-dist] of (min-one-of path [dijkstra-dist])) and (count neighbors4 with [member? self path] = 1)] ] of path) ;add a patch to the path that is one step closer to you
-        let oldpath path
-        set path (patch-set oldpath newpath) ; add this patch to your path
-        ]
-  ;ask path [set pcolor green] ; this highlights your path in green, only works with 1 turtle
-  show path ; this shows the length of the path
-  set path-to-exit path
-  set path-walked patch-set patch-here
-
 end
 
 ;; INTERNAL FUNCTIONS
@@ -312,7 +295,7 @@ number-workers
 number-workers
 0
 100
-50.0
+4.0
 1
 1
 people
