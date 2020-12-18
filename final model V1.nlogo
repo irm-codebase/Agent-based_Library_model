@@ -1,10 +1,10 @@
-__includes [ "utilities.nls" ] ; all the boring but important stuff not related to content
+__includes [ "utilities.nls" "astaralgorithm.nls" ] ; all the boring but important stuff not related to content
 
 globals [
   exit_1
   exit_2
   exit_3
-  exits
+
   all-colors
   emergency?
 
@@ -15,6 +15,10 @@ globals [
   color_wc
   color_office
   color_exit
+
+  astar_open                   ;; the open list of patches --> see astaralgorithm.nls
+  astar_closed                 ;; the closed list of patches --> see astaralgorithm.nls
+  optimal-path                 ;; the optimal path, list of patches from source to destination --> see astaralgorithm.nls
 
   valid-patches
 ]
@@ -45,6 +49,11 @@ workers-own [
 
 patches-own [
   dijkstra-dist
+
+  parent-patch                 ;; patch's predecessor --> see astaralgorithm.nls
+  f                            ;; the value of knowledge plus heuristic cost function f() --> see astaralgorithm.nls
+  g                            ;; the value of knowledge cost function g() --> see astaralgorithm.nls
+  h                            ;; the value of heuristic cost function h() --> see astaralgorithm.nls
 ]
 
 to setup
@@ -71,6 +80,7 @@ to setup
   ]
 
   ; ask turtles [build-path pref-exit]
+  ask turtles [set path-to-exit find-a-path patch-here pref-exit]
 
   reset-ticks
 end
@@ -142,7 +152,8 @@ to setup-workers [#num]
 end
 
 to setup-patches
-  set valid-patches patches with [pcolor = color_gf or pcolor = color_study or pcolor = color_desk or pcolor = color_food or pcolor = color_wc or pcolor = color_office or pcolor = color_exit]
+  ;set valid-patches patches with [pcolor = color_gf or pcolor = color_study or pcolor = color_desk or pcolor = color_food or pcolor = color_wc or pcolor = color_office or pcolor = color_exit]
+  set valid-patches patches with [pcolor != 0]
   set exit_1 patches with [pcolor = 14.8 and pxcor < 100]
   set exit_2 patches with [pcolor = 14.8 and pxcor < 130 and pycor > 170]
   set exit_3 patches with [pcolor = 14.8 and pxcor > 140]
@@ -153,7 +164,7 @@ to turtle-set-closest-exit
   let nearest-door min-one-of (patches with [pcolor = 14.8] ) [distance myself]
   ( ifelse [ pxcor ] of nearest-door < 100 [
     set pref-exit one-of exit_1 ]
-  ( [ pxcor ] of nearest-door > 130 ) and ( [ pycor ] of nearest-door > 170 ) [
+  ( [ pxcor ] of nearest-door < 130 ) and ( [ pycor ] of nearest-door > 170 ) [
     set pref-exit one-of exit_2 ]
   [ pxcor ] of nearest-door > 140 [
     set pref-exit one-of exit_3 ]
@@ -280,7 +291,7 @@ number-visitors
 number-visitors
 0
 600
-0.0
+100.0
 5
 1
 people
@@ -295,7 +306,7 @@ number-workers
 number-workers
 0
 100
-4.0
+51.0
 1
 1
 people
@@ -388,6 +399,17 @@ MONITOR
 243
 n. trained visitors
 count visitors with [trained? = true]
+17
+1
+11
+
+MONITOR
+41
+341
+131
+386
+total-people
+count turtles
 17
 1
 11
