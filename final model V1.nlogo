@@ -29,7 +29,6 @@ breed[workers worker]
 turtles-own [
   sex
   age
-  vision-range
   speed
   pref-exit
 
@@ -38,8 +37,7 @@ turtles-own [
 ]
 
 visitors-own [
-  exit
-  alert
+  alert?
   trained?
   delay ;; indicates the number of seconds left to end task before evacuation
 ]
@@ -91,27 +89,30 @@ to go
 
   ] [
     ask turtles [
-      repeat 10 [
-        ifelse trained? [
-          if patch-here = pref-exit or [ pcolor ] of patch-here = 14.8 [
-            die
+      ifelse breed = workers [
+        repeat 10 [
+          if not any? visitors in-radius vision-range [
+            evacuate ]
+        ]
+      ]
+      [
+        ( ifelse trained? [
+          repeat 10 [ evacuate ]
           ]
-          if first path-to-exit = patch-here [
-            set path-to-exit remove-item 0 path-to-exit ]
-          face first path-to-exit
-          fd (0.1 * speed / 1.5 )
-        ] [
-          not trained? [
-
+          not alert? [
+            repeat 10 [
+              if any? turtles with [ trained? ] in-radius vision-range or count visitors with [ alert? ] < 10 [
+                set alert? true
+                turtle-set-closest-exit
+                set path-to-exit find-a-path patch-here pref-exit ]
+              evacuate ]
           ]
+          alert? [
+            repeat 10 [ evacuate ]
+        ] )
       ]
     ]
   ]
-;    ask workers [
-;      if not any? visitors in-radius vision-range [
-;        ;; move to nearest exit
-;      ]
-;    ]
 ;    ask visitors with [ delay != 0 ] [ ;; visitors with tasks have time delays
 ;      set delay delay - 1
 ;    ]
@@ -143,10 +144,12 @@ to setup-visitors [#num]
 
       ifelse random 100 > percentage-trained-visitors [
         set trained? false
+        set alert? false
         set pref-exit (patch 115 182) ;; some random patch in the entrance
         time-delay
       ] [
         set trained? true
+        set alert? true
         turtle-set-closest-exit
       ]
     ]
@@ -185,6 +188,15 @@ to turtle-set-closest-exit
     set pref-exit one-of exit_3 ]
   )
   ;set destination one-of patches with [pcolor = 14.8] ; pick a random exitpatch to go to
+end
+
+to evacuate
+  if patch-here = pref-exit or [ pcolor ] of patch-here = color_exit [
+    die ]
+  if first path-to-exit = patch-here [
+    set path-to-exit remove-item 0 path-to-exit ]
+  face first path-to-exit
+  fd (0.1 * speed / 1.5 )
 end
 
 to time-delay ;;values are arbitrary, should be discussed further during meeting
@@ -306,7 +318,7 @@ number-visitors
 number-visitors
 0
 600
-450.0
+50.0
 5
 1
 people
@@ -321,7 +333,7 @@ number-workers
 number-workers
 0
 100
-50.0
+0.0
 1
 1
 people
@@ -401,7 +413,7 @@ percentage-trained-visitors
 percentage-trained-visitors
 0
 100
-100.0
+5.0
 1
 1
 %
@@ -428,6 +440,21 @@ count turtles
 17
 1
 11
+
+SLIDER
+1082
+419
+1254
+452
+vision-range
+vision-range
+0
+50
+10.0
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
