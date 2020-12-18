@@ -45,6 +45,7 @@ visitors-own [
 ]
 
 workers-own [
+  trained?
 ]
 
 patches-own [
@@ -87,22 +88,35 @@ end
 
 to go
   ifelse not emergency? [
-    ask turtles [
-      rt ( 5 - random-float 10 )
-      while [ [ pcolor ] of patch-ahead 1 = 0 ] [
-        rt 5 ]
-      fd speed
-    ]
+
   ] [
+    ask turtles [
+      repeat 10 [
+        ifelse trained? [
+          if patch-here = pref-exit or [ pcolor ] of patch-here = 14.8 [
+            die
+          ]
+          if first path-to-exit = patch-here [
+            set path-to-exit remove-item 0 path-to-exit ]
+          face first path-to-exit
+          fd (0.1 * speed / 1.5 )
+        ] [
+          not trained? [
 
-  ]
-
-  ask turtles [
-    if [ pcolor ] of patch-here = color_exit [
-      die
+          ]
+      ]
     ]
   ]
-
+;    ask workers [
+;      if not any? visitors in-radius vision-range [
+;        ;; move to nearest exit
+;      ]
+;    ]
+;    ask visitors with [ delay != 0 ] [ ;; visitors with tasks have time delays
+;      set delay delay - 1
+;    ]
+;  ]
+;
   if not any? turtles [stop]
 
   tick ; next time step
@@ -141,11 +155,12 @@ end
 
 to setup-workers [#num]
   ;ask n-of #num patches with [pcolor = color_gf or pcolor = color_office or pcolor = color_wc] [ ;; workers can spawn in offices, general area or bathroom
-  ask n-of #num patches with [pcolor = color_gf] [ ;; workers can spawn in offices, general area or bathroom
+  ask n-of #num patches with [pcolor = color_gf or pcolor = color_office] [ ;; workers can spawn in offices, general area or bathroom
     sprout-workers 1 [
       set size 2
       set color gray
       set shape "person"
+      set trained? true
       turtle-set-closest-exit
     ]
   ]
@@ -291,7 +306,7 @@ number-visitors
 number-visitors
 0
 600
-100.0
+450.0
 5
 1
 people
@@ -306,7 +321,7 @@ number-workers
 number-workers
 0
 100
-51.0
+50.0
 1
 1
 people
