@@ -215,13 +215,13 @@ to time-delay ;;values are arbitrary, should be discussed further during meeting
   let task [ pcolor ] of patch-here
   (
     ifelse task = color_study [
-      set delay 60 + random 61
+      set delay 60
     ]
     task = color_food [
       set delay 30 + random 31
     ]
     task = color_wc [
-      set delay 30 + random 271
+      set delay 180
     ]
   )
 end
