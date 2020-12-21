@@ -21,6 +21,7 @@ globals [
   optimal-path                 ;; the optimal path, list of patches from source to destination --> see astaralgorithm.nls
 
   valid-patches
+  time-til-emergency
 ]
 
 breed[visitors visitor]
@@ -31,6 +32,7 @@ turtles-own [
   age
   speed
   pref-exit
+  trained?
 
   path-to-exit
   path-walked
@@ -38,12 +40,10 @@ turtles-own [
 
 visitors-own [
   alert?
-  trained?
   delay ;; indicates the number of seconds left to end task before evacuation
 ]
 
 workers-own [
-  trained?
 ]
 
 patches-own [
@@ -81,12 +81,16 @@ to setup
   ; ask turtles [build-path pref-exit]
   ask turtles [set path-to-exit find-a-path patch-here pref-exit]
 
+  set time-til-emergency 30
+
   reset-ticks
 end
 
 to go
   ifelse not emergency? [
-
+    set time-til-emergency time-til-emergency - 1
+    if time-til-emergency = 0 [
+      set emergency? true ]
   ] [
     ask turtles [
       ifelse breed = workers [
@@ -96,28 +100,22 @@ to go
         ]
       ]
       [
-        ( ifelse trained? [
-          repeat 10 [ evacuate ]
-          ]
-          not alert? [
-            repeat 10 [
-              if any? turtles with [ trained? ] in-radius vision-range or count visitors with [ alert? ] < 10 [
+        repeat 10 [
+          ( ifelse trained? or alert? [ evacuate ]
+
+            not alert? [
+              if any? turtles with [ trained? ] in-radius vision-range [
                 set alert? true
                 turtle-set-closest-exit
                 set path-to-exit find-a-path patch-here pref-exit ]
               evacuate ]
-          ]
-          alert? [
-            repeat 10 [ evacuate ]
-        ] )
+        ) ]
       ]
     ]
   ]
-;    ask visitors with [ delay != 0 ] [ ;; visitors with tasks have time delays
-;      set delay delay - 1
-;    ]
-;  ]
-;
+  ;      ask visitors with [ delay != 0 ] [ ;; visitors with tasks have time delays
+  ;      set delay delay - 1
+  ;
   if not any? turtles [stop]
 
   tick ; next time step
@@ -161,7 +159,7 @@ to setup-workers [#num]
   ask n-of #num patches with [pcolor = color_gf or pcolor = color_office] [ ;; workers can spawn in offices, general area or bathroom
     sprout-workers 1 [
       set size 2
-      set color gray
+      set color green
       set shape "person"
       set trained? true
       turtle-set-closest-exit
@@ -318,7 +316,7 @@ number-visitors
 number-visitors
 0
 600
-50.0
+240.0
 5
 1
 people
@@ -333,7 +331,7 @@ number-workers
 number-workers
 0
 100
-0.0
+1.0
 1
 1
 people
@@ -413,7 +411,7 @@ percentage-trained-visitors
 percentage-trained-visitors
 0
 100
-5.0
+0.0
 1
 1
 %
