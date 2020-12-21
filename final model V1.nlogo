@@ -94,27 +94,27 @@ to go
       set emergency? true ]
   ] [
     ask turtles [
-      ifelse breed = workers [
+      ifelse breed = workers [ ;; as worker, if there's a visitor nearby, stop moving, if not, evacuate
         repeat 10 [
           if not any? visitors in-radius vision-range [
             evacuate ]
         ]
       ]
-      [
+      [ ;; As visitors, if you're trained, just evacuate
         repeat 10 [
           ( ifelse trained? or alert? [ evacuate ]
 
-            not alert? [
-              if any? turtles with [ trained? ] in-radius vision-range [
+            not alert? [                                                           ;; if you're not trained, and you're not alerted by someone who is, do the following:
+              if any? turtles with [ trained? ] in-radius vision-range [           ;; if there is anyone near you who's trained:
                 let guide min-one-of turtles with [ trained? ] [ distance myself ]
                 set alert? true
-                if pref-exit-list != [pref-exit-list] of guide [
-                  turtle-set-closest-exit
-                  set path-to-exit find-a-path patch-here pref-exit ]
+                if pref-exit-list != [pref-exit-list] of guide [                   ;; check if you're heading to the closest exit
+                  turtle-set-closest-exit                                          ;; (which we assume is the exit the trained person is heading to)
+                  set path-to-exit find-a-path patch-here pref-exit ]              ;; and find a path
               ]
-              ifelse delay > 0 [
-                ifelse count visitors with [ delay = 0 ] in-radius vision-range > 3 [
-                  set delay 0
+              ifelse delay > 0 [                                                   ;; If you're still packing your stuff
+                ifelse count visitors with [ alert? ] in-radius vision-range > 3 [ ;; And there are people around you that are running
+                  set delay 0                                                      ;; Start running too
                   ] [
                   set delay delay - 1 ]
               ] [
@@ -167,10 +167,20 @@ end
 
 to setup-workers [#num]
   ;ask n-of #num patches with [pcolor = color_gf or pcolor = color_office or pcolor = color_wc] [ ;; workers can spawn in offices, general area or bathroom
-  ask n-of #num patches with [pcolor = color_gf or pcolor = color_office] [ ;; workers can spawn in offices, general area or bathroom
+  ask n-of (0.9 * #num) patches with [pcolor = color_office] [ ;; workers can spawn in offices, general area or bathroom
     sprout-workers 1 [
       set size 2
-      set color green
+      set color green - 1
+      set shape "person"
+      set trained? true
+      turtle-set-closest-exit
+    ]
+  ]
+
+  ask n-of (0.1 * #num) patches with [pcolor = color_gf] [ ;; workers can spawn in offices, general area or bathroom
+    sprout-workers 1 [
+      set size 2
+      set color green - 1
       set shape "person"
       set trained? true
       turtle-set-closest-exit
@@ -330,7 +340,7 @@ number-visitors
 number-visitors
 0
 600
-450.0
+0.0
 5
 1
 people
