@@ -127,7 +127,12 @@ to go
   ;      ask visitors with [ delay != 0 ] [ ;; visitors with tasks have time delays
   ;      set delay delay - 1
   ;
-  if not any? turtles [stop]
+  if not any? turtles [
+    stop
+    let minutes floor (ticks / 60)
+    let seconds ticks - 60 * minutes
+    print word "Simulation finished. Total elapsed time: " minutes ":" seconds
+  ]
 
   tick ; next time step
 end
