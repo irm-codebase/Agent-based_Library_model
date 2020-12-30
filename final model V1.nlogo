@@ -21,7 +21,6 @@ globals [
   optimal-path                 ;; the optimal path, list of patches from source to destination --> see astaralgorithm.nls
 
   valid-patches
-  time-til-emergency
 ]
 
 breed[visitors visitor]
@@ -82,15 +81,12 @@ to setup
   ; ask turtles [build-path pref-exit]
   ask turtles [set path-to-exit find-a-path patch-here pref-exit]
 
-  set time-til-emergency 30
-
   reset-ticks
 end
 
 to go
   ifelse not emergency? [
-    set time-til-emergency time-til-emergency - 1
-    if time-til-emergency = 0 [
+    if time-til-emergency = ticks [
       set emergency? true ]
   ] [
     ask turtles [
@@ -117,8 +113,7 @@ to go
                   set delay 0                                                      ;; Start running too
                   ] [
                   set delay delay - 1 ]
-              ] [
-                evacuate ]
+              ] [ evacuate ]
             ]
         ) ]
       ]
@@ -128,10 +123,11 @@ to go
   ;      set delay delay - 1
   ;
   if not any? turtles [
+    ;let minutes floor (ticks / 60)
+    ;let seconds ticks - 60 * minutes
+    let evacuation-time (ticks - time-til-emergency)
+    print word "Simulation finished. Total elapsed seconds after emergency: " evacuation-time ;; TODO: fix this to show minutues and seconds
     stop
-    let minutes floor (ticks / 60)
-    let seconds ticks - 60 * minutes
-    print word "Simulation finished. Total elapsed time: " minutes ":" seconds
   ]
 
   tick ; next time step
@@ -404,10 +400,10 @@ count workers
 11
 
 BUTTON
-10
-241
-190
-276
+11
+288
+191
+323
 NIL
 set emergency? true
 NIL
@@ -478,6 +474,21 @@ vision-range
 0
 50
 10.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+13
+217
+193
+250
+time-til-emergency
+time-til-emergency
+5
+60
+30.0
 1
 1
 NIL
