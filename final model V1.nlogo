@@ -21,6 +21,8 @@ globals [
   optimal-path                 ;; the optimal path, list of patches from source to destination --> see astaralgorithm.nls
 
   valid-patches
+  max-turtles-per-patch
+  max-turtles-per-patch-init
 ]
 
 breed[visitors visitor]
@@ -146,7 +148,7 @@ to setup-colors
 end
 
 to setup-visitors [#num]
-  ask n-of #num patches with [pcolor = color_gf or pcolor = color_study or pcolor = color_desk or pcolor = color_food or pcolor = color_wc] [
+  ask n-of #num patches with [pcolor = color_gf or pcolor = color_study or pcolor = color_desk or pcolor = color_food or pcolor = color_wc and (count(turtles-here) <= max-turtles-per-patch-init)] [
     sprout-visitors 1 [
       set size 2
       set color blue
@@ -168,7 +170,8 @@ end
 
 to setup-workers [#num]
   ;ask n-of #num patches with [pcolor = color_gf or pcolor = color_office or pcolor = color_wc] [ ;; workers can spawn in offices, general area or bathroom
-  ask n-of (0.9 * #num) patches with [pcolor = color_office] [ ;; workers can spawn in offices, general area or bathroom
+
+  ask n-of ((workers-in-offices / 100) * #num) patches with [pcolor = color_office and (count(turtles-here) <= max-turtles-per-patch-init)] [ ;; workers can spawn in offices, general area or bathroom
     sprout-workers 1 [
       set size 2
       set color green - 1
@@ -178,7 +181,7 @@ to setup-workers [#num]
     ]
   ]
 
-  ask n-of (0.1 * #num) patches with [pcolor = color_gf] [ ;; workers can spawn in offices, general area or bathroom
+  ask n-of ((1 - (workers-in-offices / 100)) * #num) patches with [pcolor = color_gf and (count(turtles-here) <= max-turtles-per-patch-init)] [ ;; workers can spawn in offices, general area or bathroom
     sprout-workers 1 [
       set size 2
       set color green - 1
@@ -191,6 +194,9 @@ end
 
 to setup-patches
   ;set valid-patches patches with [pcolor = color_gf or pcolor = color_study or pcolor = color_desk or pcolor = color_food or pcolor = color_wc or pcolor = color_office or pcolor = color_exit]
+  set max-turtles-per-patch 18
+  set max-turtles-per-patch-init 4
+
   set valid-patches patches with [pcolor != 0]
   set exit_1 patches with [pcolor = 14.8 and pxcor < 100]
   set exit_2 patches with [pcolor = 14.8 and pxcor < 130 and pycor > 170]
@@ -341,7 +347,7 @@ number-visitors
 number-visitors
 0
 600
-0.0
+50.0
 5
 1
 people
@@ -507,6 +513,21 @@ alert-threshold
 1
 1
 NIL
+HORIZONTAL
+
+SLIDER
+1425
+258
+1651
+291
+workers-in-offices
+workers-in-offices
+0
+100
+50.0
+1
+1
+%
 HORIZONTAL
 
 @#$#@#$#@
