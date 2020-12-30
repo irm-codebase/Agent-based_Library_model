@@ -32,6 +32,7 @@ turtles-own [
   sex
   age
   speed
+  slowness
   pref-exit
   pref-exit-list
   trained?
@@ -121,6 +122,7 @@ to go
       ]
     ]
   ]
+
   ;      ask visitors with [ delay != 0 ] [ ;; visitors with tasks have time delays
   ;      set delay delay - 1
   ;
@@ -225,7 +227,31 @@ to evacuate
   if first path-to-exit = patch-here [
     set path-to-exit remove-item 0 path-to-exit ]
   face first path-to-exit
-  fd (0.1 * speed / 1.5 )
+  let crowd-in-next-patch count [turtles-here] of first path-to-exit ;
+
+  ifelse crowd-in-next-patch >= 16 [
+    set slowness 0
+    set color 11
+  ] [ ifelse crowd-in-next-patch >= 14 [
+      set slowness 0.21
+      set color 12 ] [
+      ifelse crowd-in-next-patch >= 11 [
+        set slowness  0.3
+        set color 13 ] [
+        ifelse crowd-in-next-patch >= 7 [
+          set slowness 0.43
+          set color 14 ] [
+          ifelse crowd-in-next-patch >= 5 [
+            set slowness 0.57
+            set color 15 ] [
+            set slowness 1
+            set color lime ] ] ] ] ]
+
+  ifelse (crowd-in-next-patch) < max-turtles-per-patch [
+    fd (0.1 * speed * slowness / 1.5 ) ;; TODO check if this is correct (division of 1.5 and the use of "slowness" )
+  ] [
+    set color red
+  ]
 end
 
 to time-delay ;;values are arbitrary, should be discussed further during meeting
@@ -269,8 +295,8 @@ GRAPHICS-WINDOW
 254
 0
 267
-0
-0
+1
+1
 1
 ticks
 30.0
@@ -347,7 +373,7 @@ number-visitors
 number-visitors
 0
 600
-50.0
+300.0
 5
 1
 people
@@ -362,7 +388,7 @@ number-workers
 number-workers
 0
 100
-50.0
+100.0
 1
 1
 people
@@ -442,7 +468,7 @@ percentage-trained-visitors
 percentage-trained-visitors
 0
 100
-0.0
+100.0
 1
 1
 %
@@ -488,7 +514,7 @@ HORIZONTAL
 SLIDER
 13
 217
-193
+187
 250
 time-til-emergency
 time-til-emergency
@@ -497,7 +523,7 @@ time-til-emergency
 30.0
 1
 1
-NIL
+s
 HORIZONTAL
 
 SLIDER
@@ -524,7 +550,7 @@ workers-in-offices
 workers-in-offices
 0
 100
-50.0
+100.0
 1
 1
 %
