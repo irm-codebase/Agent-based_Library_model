@@ -98,7 +98,7 @@ to go
       ]
       [ ;; As visitors, if you're trained, just evacuate
         repeat 10 [
-          ( ifelse trained? or alert? [ evacuate ]
+          (ifelse trained? or alert? [ evacuate ]
 
             not alert? [                                                           ;; if you're not trained, and you're not alerted by someone who is, do the following:
               if any? turtles with [ trained? ] in-radius vision-range [           ;; if there is anyone near you who's trained:
@@ -109,7 +109,7 @@ to go
                   set path-to-exit find-a-path patch-here pref-exit ]              ;; and find a path
               ]
               ifelse delay > 0 [                                                   ;; If you're still packing your stuff
-                ifelse count visitors with [ alert? ] in-radius vision-range > 3 [ ;; And there are people around you that are running
+                ifelse count visitors with [ alert? ] in-radius vision-range > alert-threshold [ ;; And there are people around you that are running
                   set delay 0                                                      ;; Start running too
                   ] [
                   set delay delay - 1 ]
@@ -489,6 +489,21 @@ time-til-emergency
 5
 60
 30.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+1082
+480
+1254
+513
+alert-threshold
+alert-threshold
+0
+10
+3.0
 1
 1
 NIL
