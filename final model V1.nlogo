@@ -159,7 +159,14 @@ to setup-visitors [#num]
       ifelse random 100 >= percentage-trained-visitors [
         set trained? false
         set alert? false
-        set pref-exit one-of exit_2 ;; some random patch in the entrance
+        (
+          ifelse default = 1 [
+            set pref-exit one-of exit_1 ]
+          default = 2 [
+            set pref-exit one-of exit_2 ]
+          default = 3 [
+            set pref-exit one-of exit_3 ] )
+        ;; some random patch in the entrance
         time-delay
       ] [
         set trained? true
@@ -388,7 +395,7 @@ number-workers
 number-workers
 0
 100
-100.0
+0.0
 1
 1
 people
@@ -468,7 +475,7 @@ percentage-trained-visitors
 percentage-trained-visitors
 0
 100
-5.0
+0.0
 1
 1
 %
@@ -554,6 +561,21 @@ workers-in-offices
 1
 1
 %
+HORIZONTAL
+
+SLIDER
+22
+405
+194
+438
+default
+default
+1
+3
+1.0
+1
+1
+NIL
 HORIZONTAL
 
 @#$#@#$#@
