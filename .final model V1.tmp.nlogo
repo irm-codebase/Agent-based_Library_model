@@ -24,7 +24,6 @@ globals [
   max-turtles-per-patch
   max-turtles-per-patch-init
 
-  evacuation-time
 ]
 
 breed[visitors visitor]
@@ -129,7 +128,7 @@ to go
   ;      set delay delay - 1
   ;
   if not any? turtles [
-    set evacuation-time (ticks - time-til-emergency)
+    let evacuation-time (ticks - time-til-emergency)
     let minutes floor (evacuation-time / 60)
     let seconds evacuation-time - 60 * minutes
     print ( word "Simulation finished. Total elapsed seconds after emergency: " minutes " m " seconds " s " ) ;; TODO: fix this to show minutues and seconds
