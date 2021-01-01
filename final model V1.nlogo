@@ -127,10 +127,10 @@ to go
   ;      set delay delay - 1
   ;
   if not any? turtles [
-    ;let minutes floor (ticks / 60)
-    ;let seconds ticks - 60 * minutes
     let evacuation-time (ticks - time-til-emergency)
-    print word "Simulation finished. Total elapsed seconds after emergency: " evacuation-time ;; TODO: fix this to show minutues and seconds
+    let minutes floor (evacuation-time / 60)
+    let seconds evacuation-time - 60 * minutes
+    print ( word "Simulation finished. Total elapsed seconds after emergency: " minutes " m " seconds " s " ) ;; TODO: fix this to show minutues and seconds
     stop
   ]
 
@@ -373,7 +373,7 @@ number-visitors
 number-visitors
 0
 600
-300.0
+600.0
 5
 1
 people
@@ -414,7 +414,7 @@ percentage-female
 percentage-female
 0
 100
-100.0
+40.0
 1
 1
 %
@@ -468,7 +468,7 @@ percentage-trained-visitors
 percentage-trained-visitors
 0
 100
-100.0
+5.0
 1
 1
 %
@@ -550,7 +550,7 @@ workers-in-offices
 workers-in-offices
 0
 100
-100.0
+85.0
 1
 1
 %
