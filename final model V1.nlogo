@@ -382,7 +382,7 @@ number-visitors
 number-visitors
 0
 600
-300.0
+450.0
 5
 1
 people
@@ -397,7 +397,7 @@ number-workers
 number-workers
 0
 100
-0.0
+50.0
 1
 1
 people
@@ -423,7 +423,7 @@ percentage-female
 percentage-female
 0
 100
-100.0
+50.0
 1
 1
 %
@@ -477,7 +477,7 @@ percentage-trained-visitors
 percentage-trained-visitors
 0
 100
-0.0
+100.0
 1
 1
 %
@@ -543,8 +543,8 @@ SLIDER
 alert-threshold
 alert-threshold
 0
-10
-3.0
+30
+10.0
 1
 1
 NIL
@@ -574,7 +574,7 @@ default
 default
 1
 3
-1.0
+2.0
 1
 1
 NIL
@@ -927,24 +927,24 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="prefered exit" repetitions="20" runMetricsEveryStep="true">
+  <experiment name="Main exit vs trained visitors standard" repetitions="10" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <metric>count turtles</metric>
     <metric>evacuation-time</metric>
     <enumeratedValueSet variable="percentage-female">
-      <value value="100"/>
+      <value value="50"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="number-workers">
-      <value value="0"/>
+      <value value="50"/>
     </enumeratedValueSet>
-    <steppedValueSet variable="default" first="1" step="1" last="3"/>
+    <enumeratedValueSet variable="default">
+      <value value="2"/>
+    </enumeratedValueSet>
     <enumeratedValueSet variable="vision-range">
       <value value="10"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="percentage-trained-visitors">
-      <value value="0"/>
-    </enumeratedValueSet>
+    <steppedValueSet variable="percentage-trained-visitors" first="0" step="20" last="100"/>
     <enumeratedValueSet variable="workers-in-offices">
       <value value="85"/>
     </enumeratedValueSet>
@@ -952,13 +952,49 @@ NetLogo 6.1.1
       <value value="true"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="number-visitors">
-      <value value="300"/>
+      <value value="450"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="time-til-emergency">
       <value value="30"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="alert-threshold">
       <value value="3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="verbose?">
+      <value value="true"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="Main exit vs trained visitors unaware" repetitions="10" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>count turtles</metric>
+    <enumeratedValueSet variable="percentage-female">
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="number-workers">
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="default">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="vision-range">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="percentage-trained-visitors" first="0" step="20" last="100"/>
+    <enumeratedValueSet variable="workers-in-offices">
+      <value value="85"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="debug?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="number-visitors">
+      <value value="450"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="time-til-emergency">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="alert-threshold">
+      <value value="10"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="verbose?">
       <value value="true"/>
