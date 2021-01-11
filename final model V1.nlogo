@@ -477,7 +477,7 @@ percentage-trained-visitors
 percentage-trained-visitors
 0
 100
-100.0
+0.0
 1
 1
 %
@@ -574,7 +574,7 @@ default
 default
 1
 3
-2.0
+3.0
 1
 1
 NIL
@@ -992,6 +992,46 @@ NetLogo 6.1.1
     </enumeratedValueSet>
     <enumeratedValueSet variable="time-til-emergency">
       <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="alert-threshold">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="verbose?">
+      <value value="true"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="Different exits w workers" repetitions="10" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>count turtles</metric>
+    <enumeratedValueSet variable="percentage-female">
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="number-workers">
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="default">
+      <value value="1"/>
+      <value value="2"/>
+      <value value="3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="vision-range">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="percentage-trained-visitors">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="time-til-emergency">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="debug?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="workers-in-offices">
+      <value value="85"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="number-visitors">
+      <value value="450"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="alert-threshold">
       <value value="10"/>
