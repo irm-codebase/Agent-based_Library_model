@@ -37,9 +37,15 @@ final model V1 Different exits no workers 450 std alertness -spreadsheet
 
 ####### Others ###########################
 
-final model V1 fully trained ladies -spreadsheet
-- no workers, 300 visitors, all female
-- standard alertness
-- nearest exit always
-- 100% trained
+final model V1 (fe)males -spreadsheet:
+- 100% male or female
+- alert threshold 10, 10 vision range
+- Main entrance
+- 0% training
 
+final model V1 Workers outside offices-spreadsheet:
+- standard population
+- alert threshold 10, 10 vision range
+- main entrance
+- 0% trained visitors
+- workers inside offices vary from 0% to 100%, jumps of 25%
