@@ -128,6 +128,8 @@ to go
   ;      ask visitors with [ delay != 0 ] [ ;; visitors with tasks have time delays
   ;      set delay delay - 1
   ;
+  if not any? visitors [
+    set turtle-time ticks ]
   if not any? turtles [
     set evacuation-time (ticks - time-til-emergency)
     let minutes floor (evacuation-time / 60)
@@ -559,7 +561,7 @@ workers-in-offices
 workers-in-offices
 0
 100
-100.0
+85.0
 1
 1
 %
@@ -1000,10 +1002,11 @@ NetLogo 6.1.1
       <value value="true"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="Different exits w workers" repetitions="10" runMetricsEveryStep="true">
+  <experiment name="Different exits w workers" repetitions="100" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
-    <metric>count turtles</metric>
+    <metric>count workers</metric>
+    <metric>count visitors</metric>
     <enumeratedValueSet variable="percentage-female">
       <value value="50"/>
     </enumeratedValueSet>
@@ -1011,9 +1014,7 @@ NetLogo 6.1.1
       <value value="50"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="default">
-      <value value="1"/>
       <value value="2"/>
-      <value value="3"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="vision-range">
       <value value="10"/>
